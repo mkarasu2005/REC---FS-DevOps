@@ -1,37 +1,34 @@
 import express from "express";
 import dotenv from "dotenv";
-import { connectDB } from "./config/db";
-import User from "./models/user.model";
-import Task from "./models/task.model";
+import mongoose from "mongoose";
+import authRoutes from "./routes/auth.routes";
 
 dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 
+// Routes
+app.use("/api/auth", authRoutes);
+
+// Connect to MongoDB
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI as string);
+    console.log("MongoDB Connected");
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    process.exit(1);
+  }
+};
+
+// Start server
 const PORT = process.env.PORT || 4000;
 
 const startServer = async () => {
   await connectDB();
-
-  console.log("Server connected to DB");
-
-  // 1️Create a test user
-  const user = await User.create({
-    email: "taskuser@example.com",
-    password: "123456"
-  });
-
-  console.log("User created:", user._id);
-
-  // Create a task linked to that user
-  const task = await Task.create({
-    title: "Learn Mongoose Relations",
-    description: "Understand ref and ObjectId usage",
-    userId: user._id
-  });
-
-  console.log("Task created:", task);
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
