@@ -1,47 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Task Manager</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-
-  <div class="container">
-
-    <!-- Auth Section -->
-    <div id="auth-section" class="card">
-      <h2>Task Manager 🔐</h2>
-
-      <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
-
-      <div class="btn-group">
-        <button onclick="register()">Register</button>
-        <button onclick="login()">Login</button>
-      </div>
-
-      <p id="auth-message"></p>
-    </div>
-
-    <!-- Task Section -->
-    <div id="task-section" class="card hidden">
-      <h2>Your Tasks 📋</h2>
-
-      <div class="task-input">
-        <input type="text" id="title" placeholder="Task Title" />
-        <input type="text" id="description" placeholder="Task Description" />
-        <button onclick="createTask()">Add Task</button>
-      </div>
-
-      <div id="task-list"></div>
-
-      <button class="logout" onclick="logout()">Logout</button>
-    </div>
-
-  </div>
-
-  <script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>task-frontend</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
