@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../api/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,28 +10,61 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await api.post("/auth/login", { email, password });
+      if (!email || !password) {
+        alert("Please enter email and password");
+        return;
+      }
+
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
 
       localStorage.setItem("token", res.data.token);
-
-      navigate("/"); // redirect to dashboard
-    } catch (error) {
-      alert("Login failed");
+      navigate("/");
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div>
-      <input
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Login</button>
+    <div className="login-wrapper">
+      <div className="login-card">
+
+        <div className="brand">
+          <h1>SecureTask</h1>
+          <p>Enterprise Task Management</p>
+        </div>
+
+        <div className="form-group">
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <button className="primary-btn" onClick={handleLogin}>
+          Login
+        </button>
+
+        <div className="divider"></div>
+
+        <Link to="/register" className="secondary-btn">
+          New User? Register
+        </Link>
+
+      </div>
     </div>
   );
 };
