@@ -3,7 +3,7 @@ import api from "../api/axios";
 import { useState } from "react";
 import type { Task } from "../types";
 import Navbar from "../components/Navbar";
-import "../index.css"
+import TaskCard from "../components/TaskCard";
 
 const Dashboard = () => {
   const queryClient = useQueryClient();
@@ -58,7 +58,6 @@ const Dashboard = () => {
       <Navbar />
 
       <div className="min-h-screen bg-[#0B1120] text-white px-6 py-8">
-
         <div className="max-w-7xl mx-auto">
 
           {/* STATS SECTION */}
@@ -67,8 +66,6 @@ const Dashboard = () => {
             <StatCard title="In Progress" value={inProgressCount} color="text-yellow-400" />
             <StatCard title="Completed" value={completedCount} color="text-green-400" />
           </div>
-
-          
 
           {/* CREATE TASK */}
           <div className="bg-[#111827] p-6 rounded-xl border border-gray-800 mb-8">
@@ -97,7 +94,9 @@ const Dashboard = () => {
           </div>
 
           {/* TASK LIST */}
-          {tasks.length === 0 ? (
+          {isLoading ? (
+            <p className="text-gray-400 text-center">Loading tasks...</p>
+          ) : tasks.length === 0 ? (
             <div className="bg-[#111827] border border-gray-800 rounded-xl p-20 text-center">
               <div className="text-4xl mb-4">📋</div>
               <h2 className="text-xl font-semibold mb-2">
@@ -110,34 +109,12 @@ const Dashboard = () => {
           ) : (
             <div className="grid md:grid-cols-2 gap-6">
               {tasks.map((task) => (
-                <div
+                <TaskCard
                   key={task._id}
-                  className="bg-[#111827] border border-gray-800 rounded-xl p-6"
-                >
-                  <h3 className={`text-lg font-semibold mb-2 ${task.completed ? "line-through text-gray-400" : ""}`}>
-                    {task.title}
-                  </h3>
-
-                  <p className="text-gray-400 text-sm">
-                    {task.description}
-                  </p>
-
-                  <div className="flex gap-3 mt-5">
-                    <button
-                      onClick={() => toggleComplete.mutate(task)}
-                      className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-sm font-medium"
-                    >
-                      {task.completed ? "Undo" : "Complete"}
-                    </button>
-
-                    <button
-                      onClick={() => deleteTask.mutate(task._id)}
-                      className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-medium"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
+                  task={task}
+                  onToggle={(task) => toggleComplete.mutate(task)}
+                  onDelete={(id) => deleteTask.mutate(id)}
+                />
               ))}
             </div>
           )}
