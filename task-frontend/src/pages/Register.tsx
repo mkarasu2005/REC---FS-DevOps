@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { AxiosError } from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 
@@ -9,16 +10,21 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleRegister = async () => {
     try {
+      setErrorMessage("");
+      setSuccessMessage("");
+
       if (!email || !password || !confirmPassword) {
-        alert("Please fill all fields");
+        setErrorMessage("Please fill all fields");
         return;
       }
 
       if (password !== confirmPassword) {
-        alert("Passwords do not match");
+        setErrorMessage("Passwords do not match");
         return;
       }
 
@@ -29,10 +35,11 @@ const Register = () => {
         password,
       });
 
-      alert("Registration successful!");
-      navigate("/login");
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Registration failed");
+      setSuccessMessage("Registration successful! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 800);
+    } catch (error) {
+      const apiError = error as AxiosError<{ message?: string }>;
+      setErrorMessage(apiError.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -53,6 +60,18 @@ const Register = () => {
             Secure Task Management
           </p>
         </div>
+
+        {errorMessage && (
+          <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {errorMessage}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-200">
+            {successMessage}
+          </div>
+        )}
 
         {/* Email */}
         <input
@@ -85,9 +104,12 @@ const Register = () => {
         <button
           onClick={handleRegister}
           disabled={loading}
-          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition duration-300"
+          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition duration-300 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {loading ? "Creating Account..." : "Register"}
+          <span className="inline-flex items-center gap-2">
+            {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />}
+            {loading ? "Creating Account..." : "Register"}
+          </span>
         </button>
 
         {/* Divider */}

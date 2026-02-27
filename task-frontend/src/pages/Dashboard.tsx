@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  const [createError, setCreateError] = useState("");
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["tasks"],
@@ -24,13 +25,21 @@ const Dashboard = () => {
 
   const createTask = useMutation({
     mutationFn: async () => {
-      if (!title.trim()) return;
+      const cleanedTitle = title.trim();
+      if (!cleanedTitle) {
+        throw new Error("Task title is required");
+      }
       await api.post("/tasks", { title, description });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       setTitle("");
       setDescription("");
+      setCreateError("");
+    },
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : "Failed to create task";
+      setCreateError(message);
     },
   });
 
@@ -110,7 +119,10 @@ const Dashboard = () => {
                 className="bg-[#1F2937] border border-gray-700 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 placeholder="Task Title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (createError) setCreateError("");
+                }}
               />
 
               <input
@@ -122,11 +134,20 @@ const Dashboard = () => {
 
               <button
                 onClick={() => createTask.mutate()}
-                className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-lg font-medium py-3 hover:opacity-90 transition"
+                disabled={createTask.isPending}
+                className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-lg font-medium py-3 hover:opacity-90 transition disabled:cursor-not-allowed disabled:opacity-70"
               >
-                + Create Task
+                <span className="inline-flex items-center justify-center gap-2">
+                  {createTask.isPending && (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                  )}
+                  {createTask.isPending ? "Creating..." : "+ Create Task"}
+                </span>
               </button>
             </div>
+            {createError && (
+              <p className="mt-3 text-sm text-red-300">{createError}</p>
+            )}
           </div>
 
           {/* TASK LIST */}
@@ -188,9 +209,14 @@ const Dashboard = () => {
               <button
                 onClick={handleEditSave}
                 disabled={updateTask.isPending || !editTitle.trim()}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-medium disabled:opacity-60"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-medium disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {updateTask.isPending ? "Saving..." : "Save Changes"}
+                <span className="inline-flex items-center gap-2">
+                  {updateTask.isPending && (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                  )}
+                  {updateTask.isPending ? "Saving..." : "Save Changes"}
+                </span>
               </button>
             </div>
           </div>
@@ -214,9 +240,14 @@ const Dashboard = () => {
               <button
                 onClick={() => deleteTask.mutate(taskToDelete._id)}
                 disabled={deleteTask.isPending}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-medium disabled:opacity-60"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-medium disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {deleteTask.isPending ? "Deleting..." : "Delete"}
+                <span className="inline-flex items-center gap-2">
+                  {deleteTask.isPending && (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                  )}
+                  {deleteTask.isPending ? "Deleting..." : "Delete"}
+                </span>
               </button>
             </div>
           </div>
