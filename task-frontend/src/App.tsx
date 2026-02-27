@@ -11,7 +11,8 @@ function App() {
       <Route path="/register" element={<Register />} />
 
       <Route
-        path="/"
+        // i have changes the location to tasks
+        path="/tasks"
         element={
           <ProtectedRoute>
             <Dashboard />

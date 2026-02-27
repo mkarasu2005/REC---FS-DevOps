@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import "./Login.css";
+import "../index.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,7 +22,8 @@ const Login = () => {
       });
 
       localStorage.setItem("token", res.data.token);
-      navigate("/");
+      // i have changes the location to tasks
+      navigate("/tasks");
     } catch (error: any) {
       alert(error.response?.data?.message || "Login failed");
     }
@@ -33,7 +35,7 @@ const Login = () => {
 
         <div className="brand">
           <h1>SecureTask</h1>
-          <p>Enterprise Task Management</p>
+          <p>Secure Task Management</p>
         </div>
 
         <div className="form-group">
