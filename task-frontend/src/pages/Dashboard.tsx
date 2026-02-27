@@ -9,6 +9,10 @@ const Dashboard = () => {
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["tasks"],
@@ -41,14 +45,46 @@ const Dashboard = () => {
     },
   });
 
+  const updateTask = useMutation({
+    mutationFn: async ({ id, title, description }: { id: string; title: string; description: string }) => {
+      await api.put(`/tasks/${id}`, { title, description });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      closeEditModal();
+    },
+  });
+
   const deleteTask = useMutation({
     mutationFn: async (id: string) => {
       await api.delete(`/tasks/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      setTaskToDelete(null);
     },
   });
+
+  const openEditModal = (task: Task) => {
+    setEditingTask(task);
+    setEditTitle(task.title);
+    setEditDescription(task.description ?? "");
+  };
+
+  const closeEditModal = () => {
+    setEditingTask(null);
+    setEditTitle("");
+    setEditDescription("");
+  };
+
+  const handleEditSave = () => {
+    if (!editingTask || !editTitle.trim()) return;
+    updateTask.mutate({
+      id: editingTask._id,
+      title: editTitle.trim(),
+      description: editDescription.trim(),
+    });
+  };
 
   const completedCount = tasks.filter(t => t.completed).length;
   const inProgressCount = tasks.filter(t => !t.completed).length;
@@ -113,7 +149,8 @@ const Dashboard = () => {
                   key={task._id}
                   task={task}
                   onToggle={(task) => toggleComplete.mutate(task)}
-                  onDelete={(id) => deleteTask.mutate(id)}
+                  onEdit={openEditModal}
+                  onRequestDelete={setTaskToDelete}
                 />
               ))}
             </div>
@@ -121,6 +158,70 @@ const Dashboard = () => {
 
         </div>
       </div>
+
+      {editingTask && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
+          <div className="w-full max-w-lg rounded-xl border border-gray-700 bg-[#111827] p-6">
+            <h2 className="text-xl font-semibold mb-4">Edit Task</h2>
+            <div className="space-y-4">
+              <input
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                className="w-full bg-[#1F2937] border border-gray-700 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                placeholder="Task Title"
+              />
+              <textarea
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                rows={4}
+                className="w-full bg-[#1F2937] border border-gray-700 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                placeholder="Task Description"
+              />
+            </div>
+            <div className="mt-6 flex gap-3 justify-end">
+              <button
+                onClick={closeEditModal}
+                className="px-4 py-2 rounded-lg border border-gray-600 text-gray-300 hover:border-gray-500 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditSave}
+                disabled={updateTask.isPending || !editTitle.trim()}
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-medium disabled:opacity-60"
+              >
+                {updateTask.isPending ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {taskToDelete && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
+          <div className="w-full max-w-md rounded-xl border border-red-500/30 bg-[#111827] p-6">
+            <h2 className="text-xl font-semibold mb-2">Delete Task?</h2>
+            <p className="text-gray-300 text-sm">
+              This will permanently delete <span className="font-semibold text-white">"{taskToDelete.title}"</span>.
+            </p>
+            <div className="mt-6 flex gap-3 justify-end">
+              <button
+                onClick={() => setTaskToDelete(null)}
+                className="px-4 py-2 rounded-lg border border-gray-600 text-gray-300 hover:border-gray-500 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteTask.mutate(taskToDelete._id)}
+                disabled={deleteTask.isPending}
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-medium disabled:opacity-60"
+              >
+                {deleteTask.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
