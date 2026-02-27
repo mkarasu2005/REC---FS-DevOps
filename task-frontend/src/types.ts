@@ -3,6 +3,8 @@ export interface Task {
   title: string;
   description: string;
   completed: boolean;
+  priority: "low" | "medium" | "high";
+  dueDate?: string | null;
   userId: string;
   createdAt: string;
 }
