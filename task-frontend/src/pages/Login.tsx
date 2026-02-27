@@ -1,5 +1,3 @@
-//i need to update this file to full tailwind css instead of that seprate login page css
-
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
