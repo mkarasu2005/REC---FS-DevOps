@@ -21,12 +21,13 @@ const Login = () => {
       }
 
       setLoading(true);
-      const res = await api.post("/auth/login", {
+      const res = await api.post<{ token: string; email?: string }>("/auth/login", {
         email,
         password,
       });
 
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userEmail", res.data.email ?? email.trim().toLowerCase());
       // i have changes the location to tasks
       navigate("/tasks");
     } catch (error) {
