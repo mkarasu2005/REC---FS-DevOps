@@ -3,10 +3,11 @@ import type { Task } from "../types";
 interface TaskCardProps {
   task: Task;
   onToggle: (task: Task) => void;
-  onDelete: (id: string) => void;
+  onEdit: (task: Task) => void;
+  onRequestDelete: (task: Task) => void;
 }
 
-const TaskCard = ({ task, onToggle, onDelete }: TaskCardProps) => {
+const TaskCard = ({ task, onToggle, onEdit, onRequestDelete }: TaskCardProps) => {
   return (
     <div className="bg-[#111827] border border-gray-800 rounded-xl p-6 hover:border-cyan-500/30 transition">
 
@@ -35,7 +36,14 @@ const TaskCard = ({ task, onToggle, onDelete }: TaskCardProps) => {
         </button>
 
         <button
-          onClick={() => onDelete(task._id)}
+          onClick={() => onEdit(task)}
+          className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded-lg text-sm font-medium transition"
+        >
+          Edit
+        </button>
+
+        <button
+          onClick={() => onRequestDelete(task)}
           className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-medium transition"
         >
           Delete
