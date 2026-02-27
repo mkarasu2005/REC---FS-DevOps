@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { AxiosError } from "axios";
 import api from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../index.css";
@@ -6,15 +7,20 @@ import "../index.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
+      setErrorMessage("");
+
       if (!email || !password) {
-        alert("Please enter email and password");
+        setErrorMessage("Please enter email and password");
         return;
       }
 
+      setLoading(true);
       const res = await api.post("/auth/login", {
         email,
         password,
@@ -23,8 +29,11 @@ const Login = () => {
       localStorage.setItem("token", res.data.token);
       // i have changes the location to tasks
       navigate("/tasks");
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Login failed");
+    } catch (error) {
+      const apiError = error as AxiosError<{ message?: string }>;
+      setErrorMessage(apiError.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,6 +44,12 @@ const Login = () => {
           <h1 className="mb-[5px] text-[26px] font-bold text-sky-400">SecureTask</h1>
           <p className="mb-[30px] text-[13px] text-slate-400">Secure Task Management</p>
         </div>
+
+        {errorMessage && (
+          <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="mb-5">
           <input
@@ -57,10 +72,14 @@ const Login = () => {
         </div>
 
         <button
-          className="w-full cursor-pointer rounded-lg border-none bg-gradient-to-r from-cyan-500 to-blue-500 p-[14px] font-semibold text-white transition duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(59,130,246,0.4)]"
+          disabled={loading}
+          className="w-full cursor-pointer rounded-lg border-none bg-gradient-to-r from-cyan-500 to-blue-500 p-[14px] font-semibold text-white transition duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(59,130,246,0.4)] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
           onClick={handleLogin}
         >
-          Login
+          <span className="inline-flex items-center gap-2">
+            {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />}
+            {loading ? "Signing in..." : "Login"}
+          </span>
         </button>
 
         <div className="my-5 h-px bg-slate-800"></div>
