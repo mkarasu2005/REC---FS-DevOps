@@ -3,7 +3,6 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
-import "./Login.css";
 import "../index.css";
 
 const Login = () => {
@@ -32,42 +31,48 @@ const Login = () => {
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-card">
-
-        <div className="brand">
-          <h1>SecureTask</h1>
-          <p>Secure Task Management</p>
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#0f172a,_#020617)] font-[Inter,sans-serif] px-4">
+      <div className="w-full max-w-[420px] rounded-2xl border border-cyan-400/10 bg-slate-900/85 p-[40px] shadow-[0_0_40px_rgba(0,255,255,0.1)] backdrop-blur-[15px] sm:p-[40px] max-[480px]:p-[25px]">
+        <div>
+          <h1 className="mb-[5px] text-[26px] font-bold text-sky-400">SecureTask</h1>
+          <p className="mb-[30px] text-[13px] text-slate-400">Secure Task Management</p>
         </div>
 
-        <div className="form-group">
+        <div className="mb-5">
           <input
             type="email"
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-slate-800 bg-slate-900 p-[14px] text-sm text-slate-200 transition duration-300 ease-in-out focus:border-sky-400 focus:outline-none focus:shadow-[0_0_8px_rgba(56,189,248,0.4)]"
           />
         </div>
 
-        <div className="form-group">
+        <div className="mb-5">
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-slate-800 bg-slate-900 p-[14px] text-sm text-slate-200 transition duration-300 ease-in-out focus:border-sky-400 focus:outline-none focus:shadow-[0_0_8px_rgba(56,189,248,0.4)]"
           />
         </div>
 
-        <button className="primary-btn" onClick={handleLogin}>
+        <button
+          className="w-full cursor-pointer rounded-lg border-none bg-gradient-to-r from-cyan-500 to-blue-500 p-[14px] font-semibold text-white transition duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(59,130,246,0.4)]"
+          onClick={handleLogin}
+        >
           Login
         </button>
 
-        <div className="divider"></div>
+        <div className="my-5 h-px bg-slate-800"></div>
 
-        <Link to="/register" className="secondary-btn">
+        <Link
+          to="/register"
+          className="mt-[15px] block rounded-lg border border-slate-700 bg-transparent p-3 text-center text-slate-400 no-underline transition duration-300 ease-in-out hover:border-sky-400 hover:text-sky-400"
+        >
           New User? Register
         </Link>
-
       </div>
     </div>
   );
