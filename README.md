@@ -40,6 +40,12 @@ Clone the repository:
 git clone https://github.com/mkarasu2005/REC---FS-DevOps.git
 cd REC---FS-DevOps
 
+# 📥 Before Run this Project create .env file in task-backend folder
+
+  PORT=4000
+  MONGO_URI=mongodb://localhost:27017/taskdb
+  JWT_SECRET=Kavi@2005
+
 # 🛠 Running the Project
 
 You can run the project in **two ways**:
