@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build:
+      context: ./task-backend
+    container_name: securetask-backend
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - MONGO_URI=mongodb://host.docker.internal:27017/taskdb
+      - JWT_SECRET=Kavi@2005
+    restart: always
+
+  frontend:
+    build:
+      context: ./task-frontend
+    container_name: securetask-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always

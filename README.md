@@ -1,185 +1,82 @@
-# Secure Task Management Dashboard
+# SecureTask – Enterprise Task Management System
 
-Full-stack task management application with JWT authentication, protected APIs, and a TypeScript-first codebase.
+## 📌 Overview
+SecureTask is a full-stack secure task management application built with:
 
-## Features
+- React + TypeScript (Frontend)
+- Node.js + Express + TypeScript (Backend)
+- MongoDB
+- Docker (Multi-stage builds)
+- Nginx (SPA production serving)
+- JWT Authentication
+- React Query (Data fetching)
 
-- JWT authentication (`/api/auth/login`, `/api/auth/register`)
-- Protected task APIs (all `/api/tasks/*` routes require bearer token)
-- Task CRUD:
-  - Create task
-  - Read user tasks
-  - Update task (title/description/status/priority/due date)
-  - Delete task
-- Task UX enhancements:
-  - Priority (`high | medium | low`)
-  - Due date
-  - Status filters (`All`, `In Progress`, `Completed`)
-  - Search (title + description)
-  - Sort (created date / priority)
-  - Edit modal + delete confirmation modal
-- Type-safe frontend and backend (TypeScript)
-- React Query integration for data fetching and mutation state
-- Tailwind CSS responsive UI
+---
 
-## Tech Stack
+## 🚀 Features
 
-- Frontend: React, TypeScript, Vite, React Router, Tailwind CSS, Axios, React Query
-- Backend: Node.js, Express, TypeScript, MongoDB, Mongoose, JWT, bcrypt
+- JWT Authentication (Login/Register)
+- Protected Routes
+- CRUD Operations for Tasks
+- Type-safe full stack (Strict TypeScript)
+- Production-ready Docker setup
+- Multi-stage optimized builds
+- SPA routing with Nginx
 
-## Repository Structure
+---
 
-```text
-.
-├─ task-frontend/   # React + Vite app
-├─ task-backend/    # Express + MongoDB API
-└─ Html MVP/        # legacy/static MVP files
-```
+## 🌐 GitHub Repository
 
-## Prerequisites
+Repository Link:  
+https://github.com/mkarasu2005/REC---FS-DevOps
 
-- Node.js 18+ (recommended)
-- npm 9+
-- MongoDB instance (local or cloud)
+---
 
-## Environment Variables
+# 📥 How to Import (Clone) This Project
 
-Create `task-backend/.env`:
+Clone the repository:
 
-```env
-PORT=4000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-```
+```bash
+git clone https://github.com/mkarasu2005/REC---FS-DevOps.git
+cd REC---FS-DevOps
 
-## Installation
+# 🛠 Running the Project
 
-Install dependencies in both apps:
+You can run the project in **two ways**:
 
-```powershell
-npm -C "task-backend" install
-npm -C "task-frontend" install
-```
+---
 
-## Run Locally
+## 🔹 OPTION 1: Run in Development Mode (Without Docker)
 
-Start backend:
+### 📌 Requirements
 
-```powershell
-npm -C "task-backend" run dev
-```
+- Node.js (v20+ recommended)
+- MongoDB running locally ( It can also run in Azure DocumentDB with MongoDB compatibility)
 
-Start frontend (new terminal):
+---
 
-```powershell
-npm -C "task-frontend" run dev
-```
+### ▶ Step 1: Start Backend
 
-Default URLs:
+```bash
+cd task-backend
+npm install
+npm run dev
 
-- Frontend: `http://localhost:3000`
-- Backend API: `http://localhost:4000/api`
+### ▶ Step 2: Start frontend
+```bash
+cd task-frontend
+npm install
+npm run dev
 
-## Build / Quality Commands
+## 🔹 OPTION 2: Run in Production Mode (With Docker)
 
-Frontend lint:
+## 🐳 Docker Setup
 
-```powershell
-npm -C "task-frontend" run lint
-```
+### Build & Run
 
-Frontend build:
+```bash
+docker compose up --build
 
-```powershell
-npm -C "task-frontend" run build
-```
 
-Backend build:
+After docker Build Just search This link in browser http://localhost:3000/login
 
-```powershell
-npm -C "task-backend" run build
-```
-
-## Authentication Flow
-
-1. User registers or logs in via `/api/auth/*`.
-2. Backend returns JWT token (and user email on login).
-3. Frontend stores token in `localStorage`.
-4. Axios request interceptor attaches `Authorization: Bearer <token>`.
-5. Backend `authMiddleware` validates token for all `/api/tasks` routes.
-6. On `401`, frontend clears session data and redirects to `/login`.
-
-## API Reference
-
-Base URL: `http://localhost:4000/api`
-
-### Auth
-
-- `POST /auth/register`
-  - Body:
-    ```json
-    { "email": "user@example.com", "password": "secret" }
-    ```
-  - Responses:
-    - `201` success
-    - `400` missing fields
-    - `409` duplicate user
-
-- `POST /auth/login`
-  - Body:
-    ```json
-    { "email": "user@example.com", "password": "secret" }
-    ```
-  - Response:
-    ```json
-    { "token": "jwt-token", "email": "user@example.com" }
-    ```
-
-### Tasks (Protected)
-
-All endpoints require header:
-
-```http
-Authorization: Bearer <token>
-```
-
-- `GET /tasks`  
-  Returns all tasks for authenticated user.
-
-- `POST /tasks`
-  - Body:
-    ```json
-    {
-      "title": "My task",
-      "description": "Optional details",
-      "priority": "medium",
-      "dueDate": "2026-03-10"
-    }
-    ```
-
-- `PUT /tasks/:id`
-  - Body (any updatable fields):
-    ```json
-    {
-      "title": "Updated title",
-      "description": "Updated details",
-      "completed": true,
-      "priority": "high",
-      "dueDate": "2026-03-20"
-    }
-    ```
-
-- `DELETE /tasks/:id`
-  Deletes the task if it belongs to authenticated user.
-
-## Notes
-
-- Task ownership is enforced by `userId` checks in task queries.
-- Frontend route `/tasks` is protected by `ProtectedRoute`.
-- Login/register pages are public by design; task data is not publicly accessible.
-
-## Future Improvements
-
-- Add backend request validation (e.g., Zod/Joi).
-- Add backend linting and automated tests.
-- Add `/auth/me` endpoint to hydrate session user details server-side.
