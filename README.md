@@ -1,4 +1,4 @@
-# SecureTask – Enterprise Task Management System
+# SecureTask – Secure Task Management System
 
 ## 📌 Overview
 SecureTask is a full-stack secure task management application built with:
