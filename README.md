@@ -82,10 +82,7 @@ After docker Build Just search This link in browser http://localhost:3000/login
 
 # 📥 To use Cloud Azure Mongo DB 
 
-### ▶ Step 1: Start Backend
-
-
-  Go to task-backend/.env file
+### Go to task-backend/.env file
   MONGO_URI=mongodb://localhost:27017/taskdb Change this URL to mongodb+srv://kaviadmin:Secure123@secure-task-db-kavi.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000
 
 
